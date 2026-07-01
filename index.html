@@ -195,6 +195,22 @@
 
     <header>
         <h1>¡Feliz 23 Cumpleaños! 🎉</h1>
+        <!-- Etiqueta de audio oculta (ahora vacía, la llenamos con JS) -->
+        <audio id="musicaFondo"></audio>
+        
+        <!-- Mini reproductor -->
+        <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px; align-items: center;">
+            <button onclick="cambiarCancion(-1)" style="padding: 8px 12px; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50%; cursor: pointer;">⏮️</button>
+            
+            <button id="btnMusica" onclick="toggleMusica()" style="padding: 8px 20px; background: white; color: var(--color-principal); border: none; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 150px;">
+                🎵 Reproducir
+            </button>
+            
+            <button onclick="cambiarCancion(1)" style="padding: 8px 12px; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50%; cursor: pointer;">⏭️</button>
+        </div>
+        
+        <!-- Nombre de la canción actual -->
+        <p id="nombreCancion" style="font-size: 0.9rem; margin-top: 10px; font-style: italic; opacity: 0.9;"></p>
     </header>
 
     <nav>
@@ -350,6 +366,65 @@
                 });
             }, 100);
         });
+        // 4. Lógica del Mini Reproductor para 3 canciones
+        
+        // AQUÍ PONES LOS NOMBRES DE TUS ARCHIVOS MP3
+        const playlist = [
+            { archivo: "111-YanBlock.mp3", titulo: "111 - Yan Block" }, // Ejemplos, cámbialos por los tuyos
+            { archivo: "ConLosDosEnLaCabeza.mp3", titulo: "Con Los Dos En La Cabeza - Cruzzi, Pedro Guerra" },
+            { archivo: "Nota.mp3", titulo: "Nota - Jay Wheeler, Omar Courtz" }
+        ];
+        
+        let indiceCancion = 0;
+        const audio = document.getElementById("musicaFondo");
+        const btnMusica = document.getElementById("btnMusica");
+        const textoCancion = document.getElementById("nombreCancion");
+        let sonando = false;
+
+        // Cargar la primera canción al inicio
+        function inicializarReproductor() {
+            audio.src = playlist[indiceCancion].archivo;
+            textoCancion.innerText = playlist[indiceCancion].titulo;
+        }
+
+        function toggleMusica() {
+            if (sonando) {
+                audio.pause();
+                btnMusica.innerHTML = "🎵 Reproducir";
+            } else {
+                audio.play();
+                btnMusica.innerHTML = "⏸️ Pausar";
+            }
+            sonando = !sonando;
+        }
+
+        function cambiarCancion(direccion) {
+            // Avanzar o retroceder en la lista
+            indiceCancion += direccion;
+            
+            // Si nos pasamos de la última, volvemos a la primera y viceversa
+            if (indiceCancion >= playlist.length) indiceCancion = 0;
+            if (indiceCancion < 0) indiceCancion = playlist.length - 1;
+            
+            audio.src = playlist[indiceCancion].archivo;
+            textoCancion.innerText = playlist[indiceCancion].titulo;
+            
+            // Si ya estaba sonando la música, que siga sonando la nueva automáticamente
+            if (sonando) {
+                audio.play();
+            }
+        }
+
+        // Cuando termine una canción, pasar a la siguiente automáticamente
+        audio.addEventListener('ended', function() {
+            cambiarCancion(1);
+            if (sonando) {
+                audio.play();
+            }
+        });
+
+        // Arrancar el reproductor
+        inicializarReproductor();
     </script>
 </body>
 </html>
